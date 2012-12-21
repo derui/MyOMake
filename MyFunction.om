@@ -13,7 +13,7 @@ Installed(packs) =
 	else
 		return $(array)
 
-# Create $(installed $(packed)) file fro the digest of $(targets)
+# Create $(Installed $(packed)) file from the digest of $(targets)
 CreateInstalled(pack, targets)=
 	if $(defined INSTALLED)
 		println(dump md5 $(INSTALLED)/$(pack))
