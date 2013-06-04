@@ -575,7 +575,7 @@ public.MyOCamlPackage(name, files, cmodules, linkopts, is_install) =
 
    if $(is_install)
        # add install rules
-       targets[] = META $(glob i, *mli) $(name).cmi $(name).cmo $(name).cmx $(name).cma $(name).cmxa $(name).o $(name).a $(CSTUBLIBRARIES)
+       targets[] = META $(glob i, *mli) $(name).cmi $(name).cmo $(name).cmx $(name).cma $(name).cmxa $(name).o $(name).a $(CSTUBLIBRARIES) $(glob i, *cmt) $(name).cmt $(glob i, *cmti)
 
        if $(defined INSTALLED)
            $(Installed $(name)): $(targets)
