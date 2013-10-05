@@ -390,7 +390,7 @@ if you really want to build this file.
     $(OCamlC) -bin-annot -c $<
 
 %.cmti: %.mli
-    $(OCamlC) -annot-bin $<
+    $(OCamlC) -bin-annot $<
     
 %.annot: %.ml
     $(OCamlC) $<
