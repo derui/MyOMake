@@ -748,7 +748,7 @@ public.GenerateOcamldoc(title, path, files, ?imageext) =
 
     $(INDEX_HTML): $(ML) $(MLI)
         $(OCAMLFIND) $(OCAMLDOC) -html $(PREFIXED_OCAMLINCLUDES) $(PREFIXED_OCAMLPACKS) \
-             -t $(title) $(DIR) -m A -stars -all-params -colorize-code $+
+             -t $(title) $(DIR) -m A -stars -colorize-code $+
 
     # add a clean rule
     AutoClean()
