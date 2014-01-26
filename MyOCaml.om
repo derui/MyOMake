@@ -390,7 +390,7 @@ if you really want to build this file.
     $(OCamlC) -bin-annot -c $<
 
 %.cmti: %.mli
-    $(OCamlC) -annot-bin $<
+    $(OCamlC) -bin-annot $<
     
 %.annot: %.ml
     $(OCamlC) $<
@@ -398,6 +398,47 @@ if you really want to build this file.
 # build rules
 # ======================================================================
 
+# Add rule to build ocaml program is byte compile
+#   name
+#       A name of program that is built by this function
+#   files
+#       Files to be used to build byte program
+public.OCamlProgramOnlyByte(name, files) =
+   protected.CMOFILES  = $(addsuffix .cmo, $(files))
+   protected.CMAFILES  = $(addsuffix .cma,  $(OCAML_LIBS))
+   protected.CMA_OTHER_FILES = $(addsuffix .cma, $(OCAML_OTHER_LIBS))
+
+   protected.CLIBS = $(addsuffix $(EXT_LIB), $(OCAML_CLIBS))
+
+   protected.name = $(file $(name))
+
+   protected.PROG     = $(file $(name)$(EXE))
+   protected.BYTEPROG = $(file $(name).run)
+
+   #
+   # Rules to build byte-code and native targets
+   #
+   $(BYTEPROG): $(CMAFILES) $(CMOFILES) $(CLIBS)
+        $(OCAMLFIND) $(OCAMLLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS)\
+                $(PREFIXED_OCAMLINCLUDES) $(OCAML_BYTE_LINK_FLAGS)\
+                -o $@ $(CMA_OTHER_FILES) $(CMAFILES) $(OCamlLinkSort $(CMOFILES))\
+                $(CLIBS) $(OCAML_LINK_FLAGS)
+
+   AutoClean()
+   #
+   # Link the actual byteprog executables.
+   #
+   $(PROG): $(BYTEPROG)
+       ln-or-cp $< $@
+
+   return $(array $(PROG), $(if $(BYTE_ENABLED), $(BYTEPROG)))
+
+
+# Add rule to build ocaml program that are byte compile and natives
+#   name
+#       A name of program that is built by this funciton
+#   files
+#       Files to be used to build native and byte compiled program
 public.OCamlProgram(name, files) =
    # XXX: JYH: these variables should be marked private in 0.9.9
    protected.CMOFILES  = $(addsuffix .cmo, $(files))
