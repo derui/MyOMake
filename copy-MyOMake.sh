@@ -16,4 +16,4 @@ mkdir -p $MYOMAKE_DIR
 cp *.om  $MYOMAKE_DIR/
 
 # Make resource directories
-mkdir $TO/src $TO/test
+mkdir $TO/src $TO/test $TO/doc
