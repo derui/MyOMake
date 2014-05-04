@@ -35,7 +35,6 @@ public.USE_OCAMLFIND = false
 public.CAMLIDL = $`(if $(CAMLIDL_EXISTS), camlidl)
 public.OCAMLFIND = $`(if $(USE_OCAMLFIND), ocamlfind)
 public.OCAMLFINDFLAGS =
-public.LAZY_OCAMLFINDFLAGS = $`(if $(USE_OCAMLFIND), $(OCAMLFINDFLAGS))
 
 public.OCAMLDEP = ocamldep
 public.CAMLP4 = camlp4
@@ -243,11 +242,11 @@ Shell. +=
 public.OCamlScanner(src_file) =
     if $(OCAMLDEP_MODULES_ENABLED)
         if $(OCAMLDEP_MODULES_USE_OCAMLFIND)
-            value $(OCAMLFIND) $(OCAMLDEP_MODULES) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLDEPFLAGS) -modules $(src_file) | ocamldep-postproc
+            value $(OCAMLFIND) $(OCAMLDEP_MODULES) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLDEPFLAGS) -modules $(src_file) | ocamldep-postproc
         else
             value $(OCAMLDEP_MODULES) $(OCAMLDEPFLAGS) -modules $(src_file) | ocamldep-postproc
     else
-        value $(OCAMLFIND) $(OCAMLDEP) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLDEPFLAGS) $(PREFIXED_OCAMLINCLUDES) $(src_file)
+        value $(OCAMLFIND) $(OCAMLDEP) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLDEPFLAGS) $(PREFIXED_OCAMLINCLUDES) $(src_file)
 
 #
 # Generic scanners
@@ -293,11 +292,11 @@ OCamlLinkSort(nodes) =
 
 # generic OCaml compile function.
 public.OCamlC() =
-    value $(OCAMLFIND) $(OCAMLC) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS)\
+    value $(OCAMLFIND) $(OCAMLC) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS)\
               $(OCAMLCFLAGS) $(OCAMLPPFLAGS) $(PREFIXED_OCAMLINCLUDES) $(OCAML_PACKAGE_FLAG)
 
 public.OCamlOpt() =
-    value $(OCAMLFIND) $(OCAMLOPT) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS)\
+    value $(OCAMLFIND) $(OCAMLOPT) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS)\
               $(OCAMLOPTFLAGS) $(OCAMLPPFLAGS) $(PREFIXED_OCAMLINCLUDES) $(OCAML_PACKAGE_FLAG)
 
 %.cmx : %.ml
@@ -419,7 +418,7 @@ public.OCamlProgramOnlyByte(name, files) =
    # Rules to build byte-code and native targets
    #
    $(BYTEPROG): $(CMAFILES) $(CMOFILES) $(CLIBS)
-        $(OCAMLFIND) $(OCAMLLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS)\
+        $(OCAMLFIND) $(OCAMLLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS)\
                 $(PREFIXED_OCAMLINCLUDES) $(OCAML_BYTE_LINK_FLAGS)\
                 -o $@ $(CMA_OTHER_FILES) $(CMAFILES) $(OCamlLinkSort $(CMOFILES))\
                 $(CLIBS) $(OCAML_LINK_FLAGS)
@@ -463,13 +462,13 @@ public.OCamlProgram(name, files) =
    # Rules to build byte-code and native targets
    #
    $(BYTEPROG): $(CMAFILES) $(CMOFILES) $(CLIBS)
-        $(OCAMLFIND) $(OCAMLLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS)\
+        $(OCAMLFIND) $(OCAMLLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS)\
                 $(PREFIXED_OCAMLINCLUDES) $(OCAML_BYTE_LINK_FLAGS)\
                 -o $@ $(CMA_OTHER_FILES) $(CMAFILES) $(OCamlLinkSort $(CMOFILES))\
                 $(CLIBS) $(OCAML_LINK_FLAGS)
 
    $(OPTPROG): $(CMXAFILES) $(ARFILES) $(CMXFILES) $(OFILES) $(CLIBS)
-        $(OCAMLFIND) $(OCAMLOPTLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLOPTFLAGS)\
+        $(OCAMLFIND) $(OCAMLOPTLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLOPTFLAGS)\
                 $(PREFIXED_OCAMLINCLUDES) $(OCAML_NATIVE_LINK_FLAGS)\
                 -o $@ $(CMXA_OTHER_FILES) $(CMXAFILES) $(OCamlLinkSort $(CMXFILES))\
                 $(CLIBS) $(OCAML_LINK_FLAGS)
@@ -512,10 +511,10 @@ OCamlLibrary(library, targets) =
 
     # Link commands
     $(BYTELIB): $(CMOFILES)
-        $(OCAMLFIND) $(OCAMLLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS) \
+        $(OCAMLFIND) $(OCAMLLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLCFLAGS) \
                 $(OCAML_LIB_FLAGS) -a -o $@ $(OCamlLinkSort $(CMOFILES))
     $(NATIVELIB) $(CLIB): $(CMXFILES) $(OFILES)
-        $(OCAMLFIND) $(OCAMLOPTLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLOPTFLAGS) \
+        $(OCAMLFIND) $(OCAMLOPTLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) $(OCAMLOPTFLAGS) \
                 $(OCAML_LIB_FLAGS) -a -o $(NATIVELIB) $(OCamlLinkSort $(CMXFILES))
     return $(array $(if $(NATIVE_ENABLED), $(NATIVELIB)), $(if $(NATIVE_ENABLED), $(CLIB)), $(if $(BYTE_ENABLED), $(BYTELIB)))
 
@@ -682,7 +681,7 @@ public.OCamlPackage(name, files) =
              BYTE_TARGETS += $(CMI)
              export
          $(BYTE_TARGETS): $(BYTE_DEPS)
-            $(OCAMLFIND) $(OCAMLC) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
+            $(OCAMLFIND) $(OCAMLC) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
                 $(OCAMLCFLAGS) $(OCAML_LIB_FLAGS) -pack -o $(CMO) $(OCamlLinkSort $(CMOFILES))
 
    protected.NATIVE_DEPS = $(CMXFILES) $(OFILES)
@@ -695,7 +694,7 @@ public.OCamlPackage(name, files) =
             NATIVE_TARGETS += $(CMI)
             export
          $(NATIVE_TARGETS): $(NATIVE_DEPS)
-            $(OCAMLFIND) $(OCAMLOPTLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
+            $(OCAMLFIND) $(OCAMLOPTLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
                 $(OCAMLOPTFLAGS) $(OCAML_LIB_FLAGS) -pack -o $(CMX) $(OCamlLinkSort $(CMXFILES))
 
    $(CMI):
@@ -705,11 +704,11 @@ public.OCamlPackage(name, files) =
                 $(OCamlC) -c $<
          elseif $(NATIVE_ENABLED)
             $(NATIVE_TARGETS) $(CMI): $(NATIVE_DEPS)
-               $(OCAMLFIND) $(OCAMLOPTLINK) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
+               $(OCAMLFIND) $(OCAMLOPTLINK) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
                    $(OCAMLOPTFLAGS) $(OCAML_LIB_FLAGS) -pack -o $(CMX) $(OCamlLinkSort $(CMXFILES))
          else
             $(BYTE_TARGETS) $(CMI): $(BYTE_DEPS)
-               $(OCAMLFIND) $(OCAMLC) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
+               $(OCAMLFIND) $(OCAMLC) $(OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS) \
                    $(OCAMLCFLAGS) $(OCAML_LIB_FLAGS) -pack -o $(CMO) $(OCamlLinkSort $(CMOFILES))
 
    return $(TARGETS)
