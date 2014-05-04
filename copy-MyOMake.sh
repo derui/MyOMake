@@ -14,3 +14,6 @@ mkdir -p $MYOMAKE_DIR
 
 # copy *.om files into target directory
 cp *.om  $MYOMAKE_DIR/
+
+# Make resource directories
+mkdir $TO/src $TO/test $TO/doc

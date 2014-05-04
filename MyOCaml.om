@@ -49,6 +49,12 @@ public.OCAMLOPTLINK = $`(OCAMLOPT)
 public.OCAMLDOC = ocamldoc
 
 #
+# parameters for ocamldoc
+#
+public.OCAMLDOCFLAGS =
+public.LAZY_OCAMLDOCFLAGS = $`(OCAMLDOCFLAGS)
+
+#
 # Include path
 #
 public.OCAMLINCLUDES[] = .
@@ -714,15 +720,13 @@ public.OCamlPackage(name, files) =
    return $(TARGETS)
 
 # Generate document by ocamldoc for some targets.
-#   title
-#       title for documents.
 #   path
-#       output directory for generated documents
+#       output directory for documents are generated
 #   files
 #       ML modules name (without .ml)
 #   imageext
 #       image extention without "." if generate depend image from .dot.
-public.GenerateOcamldoc(title, path, files, ?imageext) =
+public.GenerateOcamldoc(path, files, ?imageext) =
     protected.ML       = $(addsuffix .ml, $(files))
     protected.MLI       = $(filter-exists $(addsuffix .mli, $(files)))
     protected.DIR =
@@ -738,7 +742,7 @@ public.GenerateOcamldoc(title, path, files, ?imageext) =
 
     depend.dot : $(ML) $(MLI)
         $(OCAMLFIND) $(OCAMLDOC) $(PREFIXED_OCAMLINCLUDES) $(PREFIXED_OCAMLPACKS) \
-            -dot -dot-include-all -dot-reduce $+ -o $@
+            $(LAZY_OCAMLDOCFLAGS) -dot -dot-include-all -dot-reduce $+ -o $@
 
     if $(and $(not $(equal $(imageext), $(EMPTY))), $(DOT_FOUND))
         depend.$(imageext): depend.dot
@@ -747,7 +751,7 @@ public.GenerateOcamldoc(title, path, files, ?imageext) =
 
     $(INDEX_HTML): $(ML) $(MLI)
         $(OCAMLFIND) $(OCAMLDOC) -html $(PREFIXED_OCAMLINCLUDES) $(PREFIXED_OCAMLPACKS) \
-             -t $(title) $(DIR) -m A -stars -all-params -colorize-code $+
+             $(LAZY_OCAMLDOCFLAGS) $(DIR) -m A -stars -colorize-code $+
 
     # add a clean rule
     AutoClean()
