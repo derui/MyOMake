@@ -7,6 +7,16 @@
 #
 
 TO=$1
+
+function usage() {
+    echo "./install-MyOMake <to directory>"
+}
+
+if [ "$TO" = "" ]; then
+    usage
+    exit 1
+fi
+
 MYOMAKE_DIR=$TO/MyOMake
 
 # create MyOMake directory
@@ -16,4 +26,4 @@ mkdir -p $MYOMAKE_DIR
 cp *.om  $MYOMAKE_DIR/
 
 # Make resource directories
-mkdir $TO/src $TO/test $TO/doc
+cp -fr src doc test $TO/
