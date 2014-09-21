@@ -24,6 +24,9 @@ mkdir -p $MYOMAKE_DIR
 
 # copy *.om files into target directory
 cp *.om  $MYOMAKE_DIR/
+# copy default gitignore to .gitignore on target directory
+cp gitignore $MYOMAKE_DIR/.gitignore
 
+cp OMakefile OMakeroot $TO/
 # Make resource directories
 cp -fr src doc test $TO/
