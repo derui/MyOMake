@@ -28,5 +28,3 @@ cp *.om  $MYOMAKE_DIR/
 cp gitignore $MYOMAKE_DIR/.gitignore
 
 cp OMakefile OMakeroot $TO/
-# Make resource directories
-cp -fr src doc test $TO/
