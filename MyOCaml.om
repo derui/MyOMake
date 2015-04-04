@@ -25,6 +25,7 @@ public.USE_OCAMLFIND = false
     #
     NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
     BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
+    MENHIR_EXISTS = $(CheckProg menhir)
 
     # Debug build enable if defined DEBUG variable when --configure or first time of omake execution.
     DEBUG_ENABLE = false
@@ -40,7 +41,7 @@ public.OCAMLDEP = ocamldep
 public.CAMLP4 = camlp4
 public.OCAMLLEX = ocamllex
 public.OCAMLLEXFLAGS = -q
-public.OCAMLYACC = ocamlyacc
+public.OCAMLYACC = $`(if $(MENHIR_EXISTS), menhir, ocamlyacc)
 public.OCAMLYACCFLAGS =
 public.OCAMLMKTOP = ocamlmktop
 public.OCAMLMKLIB = ocamlmklib
@@ -401,6 +402,58 @@ if you really want to build this file.
     
 %.annot: %.ml
     $(OCamlC) $<
+
+# Parser generators
+public.MENHIR = menhir
+public.MENHIR_FLAGS = 
+public.MENHIR_ENABLED = true
+.STATIC:
+    MENHIR_AVAILABLE = $(CheckProg $(MENHIR))
+    MENHIR_RAW_DEPEND = false
+    if $(MENHIR_AVAILABLE)
+        ConfMsgChecking(if $(MENHIR) supports the --raw-expand option)
+        menhir_raw_depend = $(ConfMsgYesNo $(shell-success-null $(MENHIR) -help | grep $'^ *--raw-depend'))
+        export
+
+public.MenhirCheck() =
+    if $(not $(MENHIR_AVAILABLE))
+        eprintln($"""!!! You are asking to user Menhir, but it is not installed.""")
+        exit(1)
+
+public.MenhirOCamlcCommand() =
+    MenhirCheck()
+    private.ocamlc[] =\
+        $(OCAMLFIND) $(OCAMLC) $(LAZY_OCAMLFINDFLAGS) $(PREFIXED_OCAMLPACKS) $(OCAMLFLAGS)\
+            $(OCAMLCFLAGS) $(OCAMLPPFLAGS) $(PREFIXED_OCAMLINCLUDES)
+    value --ocamlc $(quote-argv $(ocamlc))
+
+public.MenhirOCamldepCommand(raw) =
+    ocamldep =
+        if $(raw)
+            value $(OCAMLDEP) -modules $(OCAMLDEPFLAGS)
+        else
+            value $(OCAMLDEP) $(PREFIXED_OCAMLINCLUDES) $(OCAMLDEPFLAGS)
+    value --ocamldep $(quote-argv $(ocamldep))
+
+public.MenhirScannerCommand(base, src) =
+    if $(MENHIR_ENABLED)
+        if $(and $(MENHIR_RAW_DEPEND), $(OCAMLDEP_MODULES_ENABLED))
+            value $(MENHIR) $(MENHIR_FLAGS) $(MenhirOCamldepCommand true) $(base) --raw-expand $(src) | ocamldep-postproc -preserve-targets
+        else
+            value $(MENHIR) $(MENHIR_FLAGS) $(MenhirOCamldepCommand false) $(base) --depend $(src)
+
+public.OCamlMenhirCommand(src) =
+    if $(MENHIR_ENABLED)
+        value $(MENHIR) $(MENHIR_FLAGS) $(MenhirOCamlcCommand) $(src)
+
+.SCANNER: scan-menhir-%.mly: %.mly :value: $(MENHIR_ENABLED) $(OCamlScannerTargets $&)
+    $(MenhirScannerCommand $(EMPTY), $<)
+
+%.ml %.mli: %.mly :scanner: scan-menhir-%.mly
+    $(OCamlMenhirCommand $<)
+
+%.ml: %.mll
+    $(OCAMLLEX) $(OCAMLLEXFLAGS) $<
 
 # build rules
 # ======================================================================
