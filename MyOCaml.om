@@ -36,6 +36,7 @@ public.USE_OCAMLFIND = false
 public.CAMLIDL = $`(if $(CAMLIDL_EXISTS), camlidl)
 public.OCAMLFIND = $`(if $(USE_OCAMLFIND), ocamlfind)
 public.OCAMLFINDFLAGS =
+public.LAZY_OCAMLFINDFLAGS = $`(OCAMLFINDFLAGS)
 
 public.OCAMLDEP = ocamldep
 public.CAMLP4 = camlp4
