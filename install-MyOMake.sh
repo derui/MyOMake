@@ -21,3 +21,5 @@ fi
 cp gitignore $TO/.gitignore
 
 cp OMakefile OMakeroot $TO/
+mkdir -p $TO/MyOMake
+cp *.om $TO/MyOMake
