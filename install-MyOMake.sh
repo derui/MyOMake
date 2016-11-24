@@ -8,7 +8,7 @@
 
 TO=$1
 
-function usage() {
+usage() {
     echo "./install-MyOMake <to directory>"
 }
 
